@@ -12,50 +12,51 @@ async function uploadFile() {
   const file = fileInput.files[0];
 
   if (!file) {
-    alert("Select a file first");
+    alert("Please select a file");
     return;
   }
 
-  const fileName = `${Date.now()}_${file.name}`;
+  const fileName = Date.now() + "_" + file.name;
 
-  const { error } = await supabase.storage
+  const { error } = await supabase
+    .storage
     .from("files")
     .upload(fileName, file);
 
   if (error) {
     alert("Upload failed");
-    console.log(error);
+    console.error(error);
   } else {
-    alert("File uploaded!");
-    listFiles();
+    alert("Upload successful");
+    loadFiles();
   }
 }
 
-// List files
-async function listFiles() {
-  const { data, error } = await supabase.storage
+// Load files
+async function loadFiles() {
+  const { data, error } = await supabase
+    .storage
     .from("files")
-    .list();
+    .list("");
 
   if (error) {
-    console.log(error);
+    console.error(error);
     return;
   }
 
-  const fileList = document.getElementById("fileList");
-  fileList.innerHTML = "";
+  const list = document.getElementById("fileList");
+  list.innerHTML = "";
 
   data.forEach(file => {
-    const li = document.createElement("li");
-
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = supabase
+      .storage
       .from("files")
       .getPublicUrl(file.name);
 
+    const li = document.createElement("li");
     li.innerHTML = `<a href="${urlData.publicUrl}" target="_blank">${file.name}</a>`;
-    fileList.appendChild(li);
+    list.appendChild(li);
   });
 }
 
-// Load files on page load
-listFiles();
+loadFiles();
