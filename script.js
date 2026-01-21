@@ -1,62 +1,72 @@
 const SUPABASE_URL = "https://saqthplxozqmbvsniicb.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_vKkChTiLjI-lIfTvNh4VBg_lBwfpgVP";
+const BUCKET_NAME = "uploads"; // must exist in Supabase
 
-const supabase = supabase.createClient(
+const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
 // Upload file
 async function uploadFile() {
-  const fileInput = document.getElementById("fileInput");
-  const file = fileInput.files[0];
+  const file = document.getElementById("fileInput").files[0];
+  if (!file) return alert("Select a file first");
 
-  if (!file) {
-    alert("Please select a file");
-    return;
-  }
+  document.getElementById("status").innerText = "Uploading...";
 
-  const fileName = Date.now() + "_" + file.name;
-
-  const { error } = await supabase
-    .storage
-    .from("files")
-    .upload(fileName, file);
+  const filePath = `${Date.now()}_${file.name}`;
+  const { error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .upload(filePath, file);
 
   if (error) {
-    alert("Upload failed");
-    console.error(error);
+    alert(error.message);
+    document.getElementById("status").innerText = "Upload failed";
   } else {
-    alert("Upload successful");
-    loadFiles();
+    document.getElementById("status").innerText = "Upload successful";
+    fetchFiles();
   }
 }
 
-// Load files
-async function loadFiles() {
-  const { data, error } = await supabase
-    .storage
-    .from("files")
-    .list("");
+// List files + calculate storage
+async function fetchFiles() {
+  const { data: files, error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .list("", { limit: 1000 });
 
   if (error) {
     console.error(error);
     return;
   }
 
-  const list = document.getElementById("fileList");
-  list.innerHTML = "";
+  let totalBytes = 0;
+  const fileList = document.getElementById("fileList");
+  fileList.innerHTML = "";
 
-  data.forEach(file => {
-    const { data: urlData } = supabase
-      .storage
-      .from("files")
-      .getPublicUrl(file.name);
+  files.forEach(file => {
+    totalBytes += file.metadata?.size || 0;
 
-    const li = document.createElement("li");
-    li.innerHTML = `<a href="${urlData.publicUrl}" target="_blank">${file.name}</a>`;
-    list.appendChild(li);
+    fileList.innerHTML += `
+      <div class="file">
+        ${file.name}
+        <button onclick="deleteFile('${file.name}')">Delete</button>
+      </div>
+    `;
   });
+
+  const mb = (totalBytes / (1024 * 1024)).toFixed(2);
+  document.getElementById("storageText").innerText =
+    `${mb} MB used`;
 }
 
-loadFiles();
+// Delete file
+async function deleteFile(fileName) {
+  const { error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .remove([fileName]);
+
+  if (!error) fetchFiles();
+}
+
+// Load files on page load
+fetchFiles();
