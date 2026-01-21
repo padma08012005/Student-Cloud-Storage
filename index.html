@@ -37,8 +37,8 @@
 
 <script>
     // CONFIGURATION
-    const SUPABASE_URL = 'https://your-project.supabase.co';
-    const SUPABASE_KEY = 'your-anon-key';
+    const SUPABASE_URL = 'https://saqthplxozqmbvsniicb.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_vKkChTiLjI-lIfTvNh4VBg_lBwfpgVP';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // UPLOAD FUNCTION
@@ -106,6 +106,15 @@
             fetchFiles();
         }
     }
+    <div id="storageUsageContainer" style="margin-top: 20px;">
+    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+        <span>Storage Used</span>
+        <span id="usageText">0 MB / 10 MB</span>
+    </div>
+    <div style="width: 100%; background: #eee; height: 10px; border-radius: 5px; overflow: hidden;">
+        <div id="progressBar" style="width: 0%; height: 100%; background: #3ecf8e; transition: width 0.3s;"></div>
+    </div>
+</div>
 
     // Load files when page opens
     fetchFiles();
