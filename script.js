@@ -1,9 +1,12 @@
+/***********************
+ * SUPABASE CONFIG
+ ***********************/
 const SUPABASE_URL = "https://saqthplxozqmbvsniicb.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_vKkChTiLjI-lIfTvNh4VBg_lBwfpgVP";
-const BUCKET_NAME = "uploads"; // must exist in Supabase
-const STORAGE_LIMIT_MB = 500;  // define your plan limit clearly
+const BUCKET_NAME = "uploads"; // must exist
+const STORAGE_LIMIT_MB = 500;
 
-// Create Supabase client
+// ✅ FIX: DO NOT redeclare `supabase`
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
@@ -25,9 +28,12 @@ async function uploadFile() {
 
   const filePath = `${Date.now()}_${file.name}`;
 
-  const { error } = await supabase.storage
+  const { error } = await supabaseClient.storage
     .from(BUCKET_NAME)
-    .upload(filePath, file);
+    .upload(filePath, file, {
+      upsert: false,
+      metadata: { size: file.size }
+    });
 
   if (error) {
     alert("Upload failed: " + error.message);
@@ -43,7 +49,7 @@ async function uploadFile() {
  * FETCH FILES + STORAGE
  ***********************/
 async function fetchFiles() {
-  const { data: files, error } = await supabase.storage
+  const { data: files, error } = await supabaseClient.storage
     .from(BUCKET_NAME)
     .list("", { limit: 1000 });
 
@@ -57,7 +63,8 @@ async function fetchFiles() {
   fileList.innerHTML = "";
 
   files.forEach(file => {
-    totalBytes += file.metadata?.size || 0;
+    const size = file.metadata?.size || 0;
+    totalBytes += size;
 
     fileList.innerHTML += `
       <div class="file">
@@ -77,7 +84,7 @@ async function deleteFile(fileName) {
   const confirmDelete = confirm("Are you sure you want to delete this file?");
   if (!confirmDelete) return;
 
-  const { error } = await supabase.storage
+  const { error } = await supabaseClient.storage
     .from(BUCKET_NAME)
     .remove([fileName]);
 
@@ -111,6 +118,4 @@ function updateStorageUI(totalBytes) {
 /***********************
  * INITIAL LOAD
  ***********************/
-fetchFiles();
-// Load files on page load
 fetchFiles();
