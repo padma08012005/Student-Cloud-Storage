@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://saqthplxozqmbvsniicb.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY"; // keep correct
+const SUPABASE_ANON_KEY = "sb_publishable_vKkChTiLjI-lIfTvNh4VBg_lBwfpgVP"; // keep correct
 const BUCKET_NAME = "uploads"; // ⚠️ MUST MATCH BUCKET NAME
 
 const supabaseClient = supabase.createClient(
