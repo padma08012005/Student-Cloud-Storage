@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Supabase Cloud Drive</title>
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase JS v2 CDN (MUST load first) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="container">
-  <h2>Supabase Cloud Drive</h2>
+  <div class="container">
+    <h2>Supabase Cloud Drive</h2>
 
-  <input type="file" id="fileInput">
-  <button onclick="uploadFile()">Upload File</button>
+    <input type="file" id="fileInput" />
+    <button type="button" onclick="uploadFile()">Upload File</button>
 
-  <p id="status">Ready</p>
+    <p id="status">Ready</p>
 
-  <h3>Storage Used</h3>
-  <div class="bar-bg">
-  <div id="progressBar"></div>
-</div>
-<p id="percentageText"></p>
-  <p id="storageText">0 MB</p>
-  <h3>Files</h3>
-  <div id="fileList"></div>
-</div>
+    <h3>Storage Used</h3>
 
-  
-<script src="script.js"></script>
+    <div class="bar-bg">
+      <div id="progressBar"></div>
+    </div>
+
+    <p id="percentageText">0%</p>
+    <p id="storageText">0 MB</p>
+
+    <h3>Files</h3>
+    <div id="fileList"></div>
+  </div>
+
+  <!-- Your JS MUST be last -->
+  <script src="script.js"></script>
+
 </body>
 </html>
