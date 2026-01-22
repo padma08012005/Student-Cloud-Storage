@@ -4,7 +4,7 @@ const BUCKET_NAME = "uploads"; // must exist in Supabase
 const STORAGE_LIMIT_MB = 500;  // define your plan limit clearly
 
 // Create Supabase client
-const supabase = window.supabase.createClient(
+const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
