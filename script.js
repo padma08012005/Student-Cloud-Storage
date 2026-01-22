@@ -17,6 +17,7 @@ const supabaseClient = supabase.createClient(
  ***********************/
 async function uploadFile() {
   const fileInput = document.getElementById("fileInput");
+  const status = document.getElementById("status");
   const file = fileInput.files[0];
 
   if (!file) {
@@ -24,24 +25,33 @@ async function uploadFile() {
     return;
   }
 
-  document.getElementById("status").innerText = "Uploading...";
+  status.innerText = "Uploading...";
 
   const filePath = `${Date.now()}_${file.name}`;
 
-  const { error } = await supabaseClient.storage
-    .from(BUCKET_NAME)
-    .upload(filePath, file, {
-      upsert: false,
-      metadata: { size: file.size }
-    });
+  try {
+    const { data, error } = await supabaseClient.storage
+      .from(BUCKET_NAME)
+      .upload(filePath, file, {
+        upsert: false,
+        metadata: { size: file.size }
+      });
 
-  if (error) {
-    alert("Upload failed: " + error.message);
-    document.getElementById("status").innerText = "Upload failed";
-  } else {
-    document.getElementById("status").innerText = "Upload successful";
+    if (error) {
+      console.error("Supabase upload error:", error);
+      status.innerText = "Upload failed ❌";
+      alert(error.message);
+      return;
+    }
+
+    console.log("Upload success:", data);
+    status.innerText = "Upload successful ✅";
     fileInput.value = "";
     fetchFiles();
+
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    status.innerText = "Upload error ❌";
   }
 }
 
